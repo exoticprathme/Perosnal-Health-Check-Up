@@ -1,0 +1,147 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+void toLowerCase(char *str) {
+    for (; *str; ++str) *str = tolower(*str);
+}
+void printAdviceAndDosage(int pulse, int age) {
+    printf("\nYour pulse rate is %d bpm.\n", pulse);
+    printf("Your age is %d years.\n", age);
+
+    // Medicine and dosage info (example)
+    // Dosage: number of tablets per day based on age group and pulse condition
+    int dosage = 0;
+    const char* medicine = "CardioHealth Tablet";
+
+    if (pulse < 50) {
+        printf("Condition: Bradycardia (low pulse).\n");
+        printf("Possible conditions: Hypothyroidism, heart block, electrolyte imbalance.\n");
+        printf("Recommended medicine: %s\n", medicine);
+        if (age < 12) {
+            dosage = 0; // Not recommended for children under 12 without doctor
+            printf("Medication not recommended for children under 12 without doctor's advice.\n");
+        } else if (age <= 50) {
+            dosage = 1;
+        } else {
+            dosage = 1; // seniors get 1 tablet
+        }
+        if (dosage > 0) {
+            printf("Suggested dosage: %d tablet daily.\n", dosage);
+        }
+
+        if (pulse < 40) {
+            printf("Warning: Very low pulse. See a doctor immediately!\n");
+        }
+
+    } else if (pulse >= 50 && pulse <= 90) {
+        printf("Condition: Normal pulse.\n");
+        printf("Maintain healthy lifestyle.\n");
+        printf("No medication needed generally. Herbal supplements may help.\n");
+        dosage = 0;
+
+    } else if (pulse > 90 && pulse <= 110) {
+        printf("Condition: Mild tachycardia (elevated pulse).\n");
+        printf("Possible causes: stress, dehydration, fever, or anxiety.\n");
+        printf("Recommended medicine: %s\n", medicine);
+        if (age < 12) {
+            dosage = 0;
+            printf("Medication not recommended for children under 12 without doctor's advice.\n");
+        } else if (age <= 50) {
+            dosage = 2;
+        } else {
+            dosage = 1;
+        }
+        if (dosage > 0) {
+            printf("Suggested dosage: %d tablets daily.\n", dosage);
+        }
+    } else {
+        printf("Condition: High pulse rate.\n");
+        printf("Possible serious conditions: arrhythmia, hyperthyroidism, infections.\n");
+        printf("Medication: Immediate doctor consultation required before any medicine.\n");
+        dosage = 0;
+        printf("Please visit a doctor as soon as possible.\n");
+    }
+
+    if (dosage > 0) {
+        printf("Please follow dosage instructions carefully and consult your doctor if symptoms worsen.\n");
+    }
+}
+
+void symptomConversation() {
+    char input[200];
+    char lcInput[200];
+
+    printf("\nYou can describe your symptoms or concerns briefly.\n");
+    printf("Type 'exit' to end the conversation.\n");
+
+    while (1) {
+        printf("\nYour input: ");
+        fgets(input, sizeof(input), stdin);
+        if (input[0] == '\n') continue;  // ignore empty input
+
+        // Remove newline at end if any
+        size_t len = strlen(input);
+        if (len > 0 && input[len-1] == '\n')
+            input[len-1] = '\0';
+
+        // Convert to lowercase
+        strcpy(lcInput, input);
+        toLowerCase(lcInput);
+
+        if (strcmp(lcInput, "exit") == 0) {
+            printf("Thank you for using the health check. Take care!\n");
+            break;
+        }
+
+        if (strstr(lcInput, "chest pain") || strstr(lcInput, "pain in chest") || strstr(lcInput, "heart pain")) {
+            printf("Chest pain can be serious. Please see a doctor immediately or call emergency services.\n");
+        } else if (strstr(lcInput, "dizziness") || strstr(lcInput, "lightheaded") || strstr(lcInput, "faint")) {
+            printf("Dizziness may be related to low pulse or blood pressure. Stay seated, avoid sudden movements, and consult a healthcare provider.\n");
+        } else if (strstr(lcInput, "fatigue") || strstr(lcInput, "tired")) {
+            printf("Fatigue can result from many causes including low heart rate or anemia. Ensure proper rest and nutrition.\n");
+        } else if (strstr(lcInput, "stress") || strstr(lcInput, "anxiety")) {
+            printf("Stress management is important. Practice deep breathing, meditation, and consider herbal supplements like lavender or valerian.\n");
+        } else if (strstr(lcInput, "fever") || strstr(lcInput, "infection")) {
+            printf("Fever or infection can increase pulse. Stay hydrated and seek medical advice if fever persists.\n");
+        } else if (strstr(lcInput, "breath") || strstr(lcInput, "shortness of breath")) {
+            printf("Difficulty breathing can be serious. Consult a doctor immediately.\n");
+        } else if (strstr(lcInput, "medicine") || strstr(lcInput, "tablet") || strstr(lcInput, "pill")) {
+            printf("Medicines should be taken as prescribed by your doctor. Do not self-medicate.\n");
+        } else {
+            printf("Thank you for sharing. For serious or persistent symptoms, please consult a healthcare professional.\n");
+        }
+    }
+}
+
+int main() {
+    int pulse, age;
+    char dummy;
+
+    printf("Welcome to Personal Pulse Health Check\n");
+
+    printf("Please enter your pulse rate (beats per minute): ");
+    if (scanf("%d", &pulse) != 1) {
+        printf("Invalid input. Please enter a valid integer.\n");
+        return 1;
+    }
+    if (pulse < 30 || pulse > 200) {
+        printf("Pulse rate must be between 30 and 200 bpm.\n");
+        return 1;
+    }
+
+    printf("Please enter your age (years): ");
+    if (scanf("%d", &age) != 1 || age <= 0 || age > 120) {
+        printf("Invalid age entered.\n");
+        return 1;
+    }
+
+    // Consume leftover newline
+    scanf("%c", &dummy);
+
+    printAdviceAndDosage(pulse, age);
+
+    symptomConversation();
+
+    return 0;
+}
